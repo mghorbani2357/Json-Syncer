@@ -1,2 +1,2 @@
-# Json-Syncer
+# JsonSyncer
 Sync Json with file
