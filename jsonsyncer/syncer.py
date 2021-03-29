@@ -1,6 +1,7 @@
 import json
 from collections.abc import MutableMapping
 from functools import wraps
+from os import path
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -17,10 +18,16 @@ def dump_json(func):
 
 
 class JsonSyncer(MutableMapping):
+    @dump_json
     def __init__(self, json_file_path, *args, **kwargs):
-        self.store = dict()
-        self.update(dict(*args, **kwargs))
         self.json_file_path = json_file_path
+
+        if path.exists(json_file_path):
+            self.__load_json()
+        else:
+            self.store = dict()
+
+        self.update(dict(*args, **kwargs))
 
     @dump_json
     def __setitem__(self, key, value):
@@ -33,6 +40,9 @@ class JsonSyncer(MutableMapping):
     def __load_json(self):
         with open(self.json_file_path, 'w') as json_file:
             json.dump(self.store, json_file)
+
+    def __file_watcher(self):
+        pass
 
     def __getitem__(self, key):
         return self.store[key]
