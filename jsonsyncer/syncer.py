@@ -17,10 +17,21 @@ def dump_json(func):
     return wrapper
 
 
+class EventHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        pass
+
+
 class JsonSyncer(MutableMapping):
-    @dump_json
+    ignore_changes = True
+
+    event_handler = EventHandler()
+    observer = Observer()
+
     def __init__(self, json_file_path, *args, **kwargs):
         self.json_file_path = json_file_path
+
+        self.event_handler.on_modified = self.__on_modified
 
         if path.exists(json_file_path):
             self.__load_json()
@@ -28,6 +39,12 @@ class JsonSyncer(MutableMapping):
             self.store = dict()
 
         self.update(dict(*args, **kwargs))
+
+        with open(self.json_file_path, 'w') as json_file:
+            json.dump(self.store, json_file)
+            
+        self.observer.schedule(self.event_handler, path=json_file_path, recursive=False)
+        self.observer.start()
 
     @dump_json
     def __setitem__(self, key, value):
@@ -41,8 +58,8 @@ class JsonSyncer(MutableMapping):
         with open(self.json_file_path, 'w') as json_file:
             json.dump(self.store, json_file)
 
-    def __file_watcher(self):
-        pass
+    def __on_modified(self, event):
+        self.__load_json()
 
     def __getitem__(self, key):
         return self.store[key]
