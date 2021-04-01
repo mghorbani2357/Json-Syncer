@@ -33,16 +33,16 @@ class JsonSyncer(MutableMapping):
 
         self.event_handler.on_modified = self.__on_modified
 
+        self.store = dict()
+
         if path.exists(json_file_path):
             self.__load_json()
-        else:
-            self.store = dict()
 
         self.update(dict(*args, **kwargs))
 
         with open(self.json_file_path, 'w') as json_file:
             json.dump(self.store, json_file)
-            
+
         self.observer.schedule(self.event_handler, path=json_file_path, recursive=False)
         self.observer.start()
 
