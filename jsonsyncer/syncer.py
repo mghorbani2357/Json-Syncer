@@ -23,7 +23,7 @@ class EventHandler(FileSystemEventHandler):
 
 
 class JsonSyncer(MutableMapping):
-    ignore_changes = True
+    ignore_changes = False
 
     event_handler = EventHandler()
     observer = Observer()
