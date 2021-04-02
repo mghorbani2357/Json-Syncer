@@ -2,15 +2,12 @@ language: python
 
 python:
     - "3.9"
-    -
-services:
-    - redis
 
 install:
     - pip install -r requirements.txt
 
 script:
-    - python -m unittest tests/limiter.py
+    - python -m unittest tests/test.py
 
 after_script:
     - bash <(curl -s https://codecov.io/bash)

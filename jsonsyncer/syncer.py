@@ -11,7 +11,6 @@ def dump_json(func):
     @wraps(func)
     def wrapper(self, *args, **kw):
         result = func(self, *args, **kw)
-        # print('dump', self.__ignore_changes)
         with open(self.json_file_path, 'w') as json_file:
             json.dump(self.store, json_file)
         return result
